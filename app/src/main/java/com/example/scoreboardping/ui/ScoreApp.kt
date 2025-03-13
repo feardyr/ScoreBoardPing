@@ -51,4 +51,10 @@ fun ScoreApp(
 
     }
 
+    ScoreHomeScreen(
+        navigationType = navigationType,
+        contentType = contentType,
+        modifier = modifier
+    )
+
 }

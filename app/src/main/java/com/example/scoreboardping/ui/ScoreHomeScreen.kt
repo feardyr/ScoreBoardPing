@@ -1,6 +1,8 @@
 package com.example.scoreboardping.ui
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,28 +15,21 @@ import com.example.scoreboardping.ui.utils.ScoreNavigationType
 fun ScoreHomeScreen(
     navigationType: ScoreNavigationType,
     contentType: ScoreContentType,
-    replyUiState: ScoreUiState,
-
     modifier: Modifier = Modifier
 ){
     val navigationItemContentList = listOf(
         NavigationItemContent(
-            icon = Icons.Default.Inbox,
-            text = stringResource(id = R.string.tab_inbox)
+            icon = Icons.Default.Home,
+            Nom = "Boulay",
+            Prenom = "Nathan",
+            point = 1100
         ),
         NavigationItemContent(
-            icon = Icons.Default.Send,
-            text = stringResource(id = R.string.tab_sent)
+            icon = Icons.Default.DateRange,
+            Nom = "Boulay",
+            Prenom = "Yannick",
+            point = 850
         ),
-        NavigationItemContent(
-            icon = Icons.Default.Drafts,
-            text = stringResource(id = R.string.tab_drafts)
-        ),
-        NavigationItemContent(
-            mailboxType = MailboxType.Spam,
-            icon = Icons.Default.Report,
-            text = stringResource(id = R.string.tab_spam)
-        )
     )
 }
 
