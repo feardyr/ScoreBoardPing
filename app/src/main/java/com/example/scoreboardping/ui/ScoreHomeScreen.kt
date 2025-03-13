@@ -14,6 +14,7 @@ fun ScoreHomeScreen(
     navigationType: ScoreNavigationType,
     contentType: ScoreContentType,
     replyUiState: ScoreUiState,
+
     modifier: Modifier = Modifier
 ){
     val navigationItemContentList = listOf(
