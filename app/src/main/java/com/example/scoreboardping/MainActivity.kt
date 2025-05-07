@@ -37,7 +37,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.scoreboardping.ui.ScoreApp
+import com.example.scoreboardping.ui.ScoreHomeScreen
 import com.example.scoreboardping.ui.theme.ScoreBoardPingTheme
+import com.example.scoreboardping.ui.utils.ScoreContentType
+import com.example.scoreboardping.ui.utils.ScoreNavigationType
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -61,6 +64,9 @@ class MainActivity : ComponentActivity() {
                     ScoreApp(
                         windowSize = windowSize.widthSizeClass,
                     )
+                   // ScoreHomeScreen(navigationType = ScoreNavigationType.BOTTOM_NAVIGATION, contentType = ScoreContentType.LIST_ONLY, modifier = Modifier)
+
+
                 }
             }
         }
@@ -82,6 +88,8 @@ fun GreetingPreview() {
         Greeting("Android")
     }
 }
+
+/*
 @Composable
 fun HomePage(){
     Column(
@@ -138,3 +146,5 @@ fun HomePage(){
         Spacer(modifier = Modifier.height(150.dp))
     }
 }
+
+*/

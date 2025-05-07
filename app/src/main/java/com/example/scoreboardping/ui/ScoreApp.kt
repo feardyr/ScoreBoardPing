@@ -52,9 +52,7 @@ fun ScoreApp(
     }
 
     ScoreHomeScreen(
-        navigationType = navigationType,
-        contentType = contentType,
-        modifier = modifier
+        navigationType = ScoreNavigationType.BOTTOM_NAVIGATION, contentType = ScoreContentType.LIST_ONLY, modifier = Modifier
     )
 
 }
