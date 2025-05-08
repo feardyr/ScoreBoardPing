@@ -1,5 +1,7 @@
 package com.example.scoreboardping.ui.theme
 
+import androidx.compose.material3.*
+import androidx.compose.ui.graphics.Color
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -16,7 +18,13 @@ private val DarkColorScheme = darkColorScheme(
     secondary = PurpleGrey80,
     tertiary = Pink80
 )
-
+private val LightColors = lightColorScheme(
+    primary = Color(0xFF6750A4),
+    secondary = Color(0xFF625B71),
+    background = Color(0xFFFFFBFE),
+    surface = Color(0xFFFFFBFE),
+    onPrimary = Color.White,
+)
 private val LightColorScheme = lightColorScheme(
     primary = Purple40,
     secondary = PurpleGrey40,
@@ -32,6 +40,14 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1C1B1F),
     */
 )
+@Composable
+fun MyAppTheme(content: @Composable () -> Unit) {
+    MaterialTheme(
+        colorScheme = LightColors,
+        typography = Typography(),
+        content = content
+    )
+}
 
 @Composable
 fun ScoreBoardPingTheme(

@@ -38,9 +38,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.scoreboardping.ui.ScoreApp
 import com.example.scoreboardping.ui.ScoreHomeScreen
+import com.example.scoreboardping.ui.theme.MyAppTheme
 import com.example.scoreboardping.ui.theme.ScoreBoardPingTheme
 import com.example.scoreboardping.ui.utils.ScoreContentType
 import com.example.scoreboardping.ui.utils.ScoreNavigationType
+
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.*
+import androidx.compose.material.icons.filled.*
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -48,28 +66,157 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ScoreBoardPingTheme {
-                val layoutDirection = LocalLayoutDirection.current
-                Surface(
-                    modifier = Modifier
-                        .padding(
-                            start = WindowInsets.safeDrawing.asPaddingValues()
-                                .calculateStartPadding(layoutDirection),
-                            end = WindowInsets.safeDrawing.asPaddingValues()
-                                .calculateEndPadding(layoutDirection)
-                        )
-                ) {
-                    val windowSize = calculateWindowSizeClass(this)
+            MyAppTheme {
+                LibraryScreen()
+            }
+//
+//            ScoreBoardPingTheme {
+//                val layoutDirection = LocalLayoutDirection.current
+//                Surface(
+//                    modifier = Modifier
+//                        .padding(
+//                            start = WindowInsets.safeDrawing.asPaddingValues()
+//                                .calculateStartPadding(layoutDirection),
+//                            end = WindowInsets.safeDrawing.asPaddingValues()
+//                                .calculateEndPadding(layoutDirection)
+//                        )
+//                ) {
+//                    val windowSize = calculateWindowSizeClass(this)
+//
+//                    ScoreApp(
+//                        windowSize = windowSize.widthSizeClass,
+//                    )
+//                   // ScoreHomeScreen(navigationType = ScoreNavigationType.BOTTOM_NAVIGATION, contentType = ScoreContentType.LIST_ONLY, modifier = Modifier)
+//
+//
+//                }
+//            }
+        }
+    }
+}
 
-                    ScoreApp(
-                        windowSize = windowSize.widthSizeClass,
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LibraryScreen() {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Title") },
+                navigationIcon = {
+                    IconButton(onClick = { /* Back */ }) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {}) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "More")
+                    }
+                }
+            )
+        },
+        bottomBar = {
+            NavigationBar {
+                repeat(3) { index ->
+                    NavigationBarItem(
+                        selected = index == 0,
+                        onClick = { },
+                        icon = {
+                            Icon(
+                                if (index == 0) Icons.Default.Star else Icons.Default.StarBorder,
+                                contentDescription = "Label"
+                            )
+                        },
+                        label = { Text("Label") }
                     )
-                   // ScoreHomeScreen(navigationType = ScoreNavigationType.BOTTOM_NAVIGATION, contentType = ScoreContentType.LIST_ONLY, modifier = Modifier)
-
-
                 }
             }
         }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize()
+        ) {
+
+            // Filter Chips
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(6) { index ->
+                    FilterChip(
+                        selected = index == 1,
+                        onClick = { },
+                        label = { Text("Label") }
+                    )
+                }
+            }
+
+            // Sort & View Options
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(Icons.Default.SwapVert, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Label", fontWeight = FontWeight.Medium)
+                Spacer(modifier = Modifier.weight(1f))
+                Icon(Icons.Default.ViewModule, contentDescription = "Grid")
+            }
+
+            // Grid of Cards
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(12) { index ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp),
+                        elevation = CardDefaults.cardElevation(4.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.SpaceBetween,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .background(
+                                        Color.LightGray,
+                                        shape = MaterialTheme.shapes.medium
+                                    )
+                            )
+                            Text("Title", style = MaterialTheme.typography.labelLarge)
+                            Text(
+                                "Updated ${listOf("today", "yesterday", "2 days ago")[index % 3]}",
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun LibraryScreenPreview() {
+    MyAppTheme {
+        LibraryScreen()
     }
 }
 
