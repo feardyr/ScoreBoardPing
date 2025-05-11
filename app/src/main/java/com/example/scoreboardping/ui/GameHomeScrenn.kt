@@ -1,11 +1,10 @@
 package com.example.scoreboardping.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.background
-import androidx.compose.foundation.content.MediaType.Companion.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,10 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.ChangeHistory
@@ -59,13 +56,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.scoreboardping.R
 import kotlinx.coroutines.launch // Importation pour scope.launch
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 
 @OptIn(ExperimentalMaterial3Api::class) // Annotation pour l'utilisation de TopAppBar
 @Composable
@@ -73,6 +72,7 @@ fun MainScreen() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed) // Utilisation de rememberDrawerState de Material 3
     val scope = rememberCoroutineScope()
 
+    val navController = rememberNavController()
     ModalNavigationDrawer( // Utilisation de ModalNavigationDrawer de Material 3
         drawerState = drawerState,
         drawerContent = {
@@ -110,14 +110,24 @@ fun MainScreen() {
                     BottomNavigationBar()
                 },
                 content = { padding ->
+                    NavHost(
+                        navController = navController,
+                        startDestination = GameHomeScreen.Start.name,
+                        modifier = Modifier.padding(padding)
+                    ){
+                        composable(route = GameHomeScreen.Start.name) { MainCard(Modifier.padding(padding)) }
+                    }
 //                    MainCard(Modifier.padding(padding))7
-                    ListGames(Modifier.padding(padding))
+                    //ListGames(Modifier.padding(padding))
                 }
             )
         }
     )
 }
+enum class GameHomeScreen(@StringRes val title: Int) {
+    Start(title = R.string.app_name),
 
+}
 
 @Composable
 fun DrawerContent() {
