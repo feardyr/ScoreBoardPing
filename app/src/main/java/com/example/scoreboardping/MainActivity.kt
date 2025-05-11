@@ -50,6 +50,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -59,6 +60,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.compose.material.icons.filled.*
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.scoreboardping.ui.MainScreen
+import com.example.scoreboardping.ui.NavigationScreen
+import com.example.scoreboardping.ui.NavigationViewModel
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -67,7 +72,23 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyAppTheme {
-                LibraryScreen()
+                MainScreen()
+//
+//                var showApp by remember { mutableStateOf(false) }
+//                val viewModel: NavigationViewModel = viewModel()
+//                var showMainScreen by remember { mutableStateOf(false) }
+//
+//
+//                if (!showMainScreen) {
+//                    WelcomeScreen(onEnter = { showMainScreen = true })
+//                } else {
+//                    NavigationScreen(
+//                        viewModel = viewModel,
+//                        showRail = true,
+//                        animateEntrance = true // 👈 flag pour déclencher l'animation
+//                    )
+//                }
+                //LibraryScreen()
             }
 //
 //            ScoreBoardPingTheme {
@@ -94,6 +115,19 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+@Composable
+fun WelcomeScreen(onEnter: () -> Unit) {
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+            Button(onClick = onEnter) {
+                Text("Accéder à l'application")
+            }
+        }
+    }
+}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -105,7 +139,7 @@ fun LibraryScreen() {
                 title = { Text("Title") },
                 navigationIcon = {
                     IconButton(onClick = { /* Back */ }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
@@ -219,79 +253,3 @@ fun LibraryScreenPreview() {
         LibraryScreen()
     }
 }
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ScoreBoardPingTheme {
-        Greeting("Android")
-    }
-}
-
-/*
-@Composable
-fun HomePage(){
-    Column(
-        modifier = Modifier
-            .statusBarsPadding()
-            .padding(horizontal = 40.dp)
-            .verticalScroll(rememberScrollState())
-            .safeDrawingPadding(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = stringResource(R.string.calculate_tip),
-            modifier = Modifier
-                .padding(bottom = 16.dp, top = 40.dp)
-                .align(alignment = Alignment.Start)
-        )
-        EditNumberField(
-            label = R.string.bill_amount,
-            leadingIcon = R.drawable.money,
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next
-            ),
-            value = amountInput,
-            onValueChange = {amountInput = it},
-            modifier = Modifier
-                .padding(bottom = 32.dp)
-                .fillMaxWidth())
-
-        EditNumberField(
-            label = R.string.how_was_the_service,
-            leadingIcon = R.drawable.percent,
-            keyboardOptions =  KeyboardOptions(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
-            ),
-            value = tipInput ,
-            onValueChange ={tipInput = it},
-            modifier = Modifier
-                .padding(bottom = 32.dp)
-                .fillMaxWidth()
-        )
-        RoundTheTipRow(
-            roundUp = roundUp,
-            onRoundUpChanged = { roundUp = it },
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
-
-        Text(
-            text = stringResource(R.string.tip_amount, tip),
-            style = MaterialTheme.typography.displaySmall
-        )
-        Spacer(modifier = Modifier.height(150.dp))
-    }
-}
-
-*/

@@ -41,6 +41,12 @@ android {
 
 dependencies {
     implementation("androidx.compose.material:material-icons-extended")
+    implementation ("androidx.compose.material3:material3:1.2.0")
+    implementation ("androidx.compose.material:material-icons-extended")
+   // implementation ("androidx.compose.material:material:1.6.0")
+
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation ("androidx.activity:activity-compose:1.8.0")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -51,6 +57,8 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material3.window.size.class1.android)
+    implementation(libs.androidx.lifecycle.runtime.android)
+    implementation(libs.androidx.lifecycle.runtime.compose.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

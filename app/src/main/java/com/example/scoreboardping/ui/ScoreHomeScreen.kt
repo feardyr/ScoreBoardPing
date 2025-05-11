@@ -48,6 +48,8 @@ fun ScoreHomeScreen(
     }
 }
 
+
+
 @Preview(showBackground = true)
 @Composable
 fun HomeLayout(
@@ -84,6 +86,7 @@ fun HomeLayout(
         }
     }
 }
+
 private data class NavigationItemContent(
     val icon: ImageVector,
     val Nom: String,
