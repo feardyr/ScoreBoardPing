@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import com.example.scoreboardping.R
 import kotlinx.coroutines.launch // Importation pour scope.launch
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -70,6 +71,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.compose.runtime.getValue
+import com.example.scoreboardping.ui.GameHomeScreen
 
 @OptIn(ExperimentalMaterial3Api::class) // Annotation pour l'utilisation de TopAppBar
 @Composable
@@ -82,7 +84,8 @@ fun MainScreen() {
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet { // Utilisation de ModalDrawerSheet de Material 3
-                DrawerContent()
+                DrawerContent(navController = navController,
+                    drawerState = drawerState)
             }
         },
         content = {
@@ -153,7 +156,13 @@ fun Menu() {
 }
 
 @Composable
-fun DrawerContent() {
+fun DrawerContent(
+    navController : NavHostController,
+    drawerState: DrawerState
+) {
+    val scope = rememberCoroutineScope()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
     Column(
         Modifier
             .fillMaxHeight()
@@ -162,8 +171,30 @@ fun DrawerContent() {
     ) {
         IconWithLabelButton(Icons.Default.Edit, "Edit", Color(0xFFF8DDEB))
         Spacer(modifier = Modifier.height(16.dp))
-        IconWithLabelButton(Icons.Default.Email, "Mail")
-        IconWithLabelButton(Icons.Default.Chat, "Chat")
+        IconWithLabelButton(Icons.Default.Email, "Mail", onClick = {
+            if (currentRoute != GameHomeScreen.Menu.name) {
+                navController.navigate(GameHomeScreen.Menu.name) {
+                    popUpTo(navController.graph.startDestinationId) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+            scope.launch { drawerState.close() }
+        } )
+        IconWithLabelButton(Icons.Default.Chat, "Chat",onClick = {
+            if (currentRoute != GameHomeScreen.Start.name) {
+                navController.navigate(GameHomeScreen.Start.name) {
+                    popUpTo(navController.graph.startDestinationId) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+            scope.launch { drawerState.close() }
+        })
         IconWithLabelButton(Icons.Default.Groups, "Spaces")
         IconWithLabelButton(Icons.Default.VideoCall, "Meet")
     }
