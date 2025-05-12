@@ -61,10 +61,15 @@ import androidx.compose.ui.unit.dp
 import com.example.scoreboardping.R
 import kotlinx.coroutines.launch // Importation pour scope.launch
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.compose.runtime.getValue
 
 @OptIn(ExperimentalMaterial3Api::class) // Annotation pour l'utilisation de TopAppBar
 @Composable
@@ -107,15 +112,25 @@ fun MainScreen() {
                     )
                 },
                 bottomBar = {
-                    BottomNavigationBar()
+                    BottomNavigationBar(navController = navController)
                 },
                 content = { padding ->
                     NavHost(
                         navController = navController,
                         startDestination = GameHomeScreen.Start.name,
-                        modifier = Modifier.padding(padding)
+                        modifier = Modifier
+                            .padding(padding)
+                            .fillMaxSize()
                     ){
-                        composable(route = GameHomeScreen.Start.name) { MainCard(Modifier.padding(padding)) }
+                        composable(route = GameHomeScreen.Start.name) {
+                            ListGamesMain()
+                        }
+                        composable(route = GameHomeScreen.ListGames.name) {
+                            ListGamesHeader()
+                        }
+                        composable(route = GameHomeScreen.Menu.name) {
+                            Menu()
+                        }
                     }
 //                    MainCard(Modifier.padding(padding))7
                     //ListGames(Modifier.padding(padding))
@@ -126,7 +141,15 @@ fun MainScreen() {
 }
 enum class GameHomeScreen(@StringRes val title: Int) {
     Start(title = R.string.app_name),
+    ListGames(title = R.string.listegame),
+    Menu(title = R.string.menu)
 
+}
+
+
+@Composable
+fun Menu() {
+    Text("fbryfrfgrfrgyrgf")
 }
 
 @Composable
@@ -137,14 +160,15 @@ fun DrawerContent() {
             .background(Color(0xFFF8F2FC))
             .padding(16.dp)
     ) {
-        IconWithLabel(Icons.Default.Edit, "Edit", Color(0xFFF8DDEB))
+        IconWithLabelButton(Icons.Default.Edit, "Edit", Color(0xFFF8DDEB))
         Spacer(modifier = Modifier.height(16.dp))
-        IconWithLabel(Icons.Default.Email, "Mail")
-        IconWithLabel(Icons.Default.Chat, "Chat")
-        IconWithLabel(Icons.Default.Groups, "Spaces")
-        IconWithLabel(Icons.Default.VideoCall, "Meet")
+        IconWithLabelButton(Icons.Default.Email, "Mail")
+        IconWithLabelButton(Icons.Default.Chat, "Chat")
+        IconWithLabelButton(Icons.Default.Groups, "Spaces")
+        IconWithLabelButton(Icons.Default.VideoCall, "Meet")
     }
 }
+
 
 @Composable
 fun IconWithLabel(icon: ImageVector, label: String, bgColor: Color = Color.Transparent) {
@@ -162,15 +186,65 @@ fun IconWithLabel(icon: ImageVector, label: String, bgColor: Color = Color.Trans
 }
 
 @Composable
-fun ListGames(modifier: Modifier = Modifier) {
+fun IconWithLabelButton(
+    icon: ImageVector,
+    label: String,
+    bgColor: Color = Color.Transparent,
+    contentColor: Color = Color.Black,
+    onClick: () -> Unit = {}
+) {
+    Button(onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = bgColor,
+            contentColor = contentColor),
+        modifier = Modifier
+      .padding(horizontal = 1.dp, vertical = 8.dp)
+
+        ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Start,
+            modifier = Modifier.padding(horizontal = 8.dp)
+        ) {
+            Icon(icon, contentDescription = null)
+            Spacer(Modifier.width(12.dp))
+            Text(label, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+
+@Composable
+fun ListGamesHeader(
+    modifier: Modifier = Modifier,
+    onNextButtonClicked: (Int) -> Unit = {}
+
+) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        items(5) {
+        items(10) {
             //MainCard()
             HeaderCard()
+        }
+    }
+}
+
+@Composable
+fun ListGamesMain(
+    modifier: Modifier = Modifier,
+    onNextButtonClicked: (Int) -> Unit = {}
+
+) {
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        items(10) {
+            MainCard()
         }
     }
 }
@@ -248,7 +322,11 @@ fun HeaderCard(modifier: Modifier = Modifier) {
 
 
 @Composable
-fun MainCard(modifier: Modifier = Modifier) {
+fun MainCard(
+    modifier: Modifier = Modifier,
+    onNextButtonClicked: (Int) -> Unit = {}
+)
+{
     Card(
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -310,25 +388,85 @@ fun CircleAvatar(letter: String) {
     }
 }
 
+//@Composable
+//fun BottomNavigationBar(navController: NavHostController = rememberNavController()) {
+//
+//    NavigationBar(containerColor = Color(0xFFF8F2FC)) { // Utilisation de NavigationBar et containerColor pour Material 3
+//        NavigationBarItem( // Utilisation de NavigationBarItem pour Material 3
+//            icon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
+//            selected = true,
+//            onClick = { },
+//            label = { Text("Explore") }
+//        )
+//        NavigationBarItem( // Utilisation de NavigationBarItem pour Material 3
+//            icon = { Icon(Icons.Default.Bookmark, contentDescription = null) },
+//            selected = false,
+//            onClick = { navController.navigate(GameHomeScreen.Start.name) },
+//            label = { Text("Saved") }
+//        )
+//        NavigationBarItem( // Utilisation de NavigationBarItem pour Material 3
+//            icon = { Icon(Icons.Default.Update, contentDescription = null) },
+//            selected = false,
+//            onClick = { navController.navigate(GameHomeScreen.ListGames.name)},
+//            label = { Text("Updates") }
+//        )
+//    }
+//}
+
 @Composable
-fun BottomNavigationBar() {
-    NavigationBar(containerColor = Color(0xFFF8F2FC)) { // Utilisation de NavigationBar et containerColor pour Material 3
-        NavigationBarItem( // Utilisation de NavigationBarItem pour Material 3
+fun BottomNavigationBar(navController: NavHostController) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    NavigationBar(containerColor = Color(0xFFF8F2FC)) {
+        NavigationBarItem(
             icon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
-            selected = true,
-            onClick = { },
+            selected = currentRoute == GameHomeScreen.Menu.name,
+            onClick = {
+                if (currentRoute != GameHomeScreen.Menu.name) {
+                    navController.navigate(GameHomeScreen.Menu.name) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            },
             label = { Text("Explore") }
         )
-        NavigationBarItem( // Utilisation de NavigationBarItem pour Material 3
+
+        NavigationBarItem(
             icon = { Icon(Icons.Default.Bookmark, contentDescription = null) },
-            selected = false,
-            onClick = { },
+            selected = currentRoute == GameHomeScreen.Start.name,
+            onClick = {
+                if (currentRoute != GameHomeScreen.Start.name) {
+                    navController.navigate(GameHomeScreen.Start.name) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            },
             label = { Text("Saved") }
         )
-        NavigationBarItem( // Utilisation de NavigationBarItem pour Material 3
+
+        NavigationBarItem(
             icon = { Icon(Icons.Default.Update, contentDescription = null) },
-            selected = false,
-            onClick = { },
+            selected = currentRoute == GameHomeScreen.ListGames.name,
+            onClick = {
+                if (currentRoute != GameHomeScreen.ListGames.name) {
+                    navController.navigate(GameHomeScreen.ListGames.name) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            },
             label = { Text("Updates") }
         )
     }

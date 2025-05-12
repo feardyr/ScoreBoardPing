@@ -60,7 +60,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import androidx.compose.material.icons.filled.*
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.scoreboardping.ui.MainScreen
 import com.example.scoreboardping.ui.NavigationScreen
 import com.example.scoreboardping.ui.NavigationViewModel
