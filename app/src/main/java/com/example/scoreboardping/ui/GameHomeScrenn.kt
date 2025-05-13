@@ -84,8 +84,10 @@ fun MainScreen() {
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet { // Utilisation de ModalDrawerSheet de Material 3
-                DrawerContent(navController = navController,
-                    drawerState = drawerState)
+                DrawerContent(
+                    navController = navController,
+                    drawerState = drawerState
+                )
             }
         },
         content = {
@@ -134,6 +136,9 @@ fun MainScreen() {
                         composable(route = GameHomeScreen.Menu.name) {
                             Menu()
                         }
+                        composable(route = GameHomeScreen.ScorePing.name) {
+                            MainPingScreen()
+                        }
                     }
 //                    MainCard(Modifier.padding(padding))7
                     //ListGames(Modifier.padding(padding))
@@ -145,7 +150,8 @@ fun MainScreen() {
 enum class GameHomeScreen(@StringRes val title: Int) {
     Start(title = R.string.app_name),
     ListGames(title = R.string.listegame),
-    Menu(title = R.string.menu)
+    Menu(title = R.string.menu),
+    ScorePing(title =R.string.scoreping)
 
 }
 
@@ -195,7 +201,19 @@ fun DrawerContent(
             }
             scope.launch { drawerState.close() }
         })
-        IconWithLabelButton(Icons.Default.Groups, "Spaces")
+        IconWithLabelButton(Icons.Default.Groups, "Spaces", onClick = {
+            if (currentRoute != GameHomeScreen.ScorePing.name) {
+                navController.navigate(GameHomeScreen.ScorePing.name) {
+                    popUpTo(navController.graph.startDestinationId) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            }
+            scope.launch { drawerState.close() }
+
+        })
         IconWithLabelButton(Icons.Default.VideoCall, "Meet")
     }
 }
@@ -452,10 +470,10 @@ fun BottomNavigationBar(navController: NavHostController) {
     NavigationBar(containerColor = Color(0xFFF8F2FC)) {
         NavigationBarItem(
             icon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
-            selected = currentRoute == GameHomeScreen.Menu.name,
+            selected = currentRoute == GameHomeScreen.ScorePing.name,
             onClick = {
-                if (currentRoute != GameHomeScreen.Menu.name) {
-                    navController.navigate(GameHomeScreen.Menu.name) {
+                if (currentRoute != GameHomeScreen.ScorePing.name) {
+                    navController.navigate(GameHomeScreen.ScorePing.name) {
                         popUpTo(navController.graph.startDestinationId) {
                             saveState = true
                         }
