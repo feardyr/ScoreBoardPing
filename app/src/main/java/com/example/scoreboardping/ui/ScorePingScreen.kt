@@ -1,5 +1,6 @@
 package com.example.scoreboardping.ui
 
+//import EquipeDragAndDropScreen
 import android.R.attr.text
 import android.util.Log
 import androidx.compose.foundation.background
@@ -53,9 +54,39 @@ fun MainPingScreen(){
     var selectedOption by remember { mutableStateOf(options[0]) }
     var isSwitchOn by remember { mutableStateOf(false) }
     val joueursActuels = listOf(text1, text2, text3, text4).filter { it.isNotBlank() }
+
     var equipeAState by remember { mutableStateOf<List<String>>(emptyList()) }
     var equipeBState by remember { mutableStateOf<List<String>>(emptyList()) }
 
+    LaunchedEffect(joueursActuels, isSwitchOn) {
+        if (isSwitchOn) {
+            val currentPlayersInTeamsSet = (equipeAState + equipeBState).toSet()
+            val joueursActuelsSet = joueursActuels.toSet()
+
+            // Condition simplifiée : mettre à jour si l'ensemble des joueurs dans les équipes
+            // ne correspond pas à l'ensemble des joueurs actifs actuels.
+            // Cela gère l'ajout/suppression/modification de joueurs et l'initialisation.
+            if (currentPlayersInTeamsSet != joueursActuelsSet) {
+                Log.d("EquipeUpdate", "Changement joueurs/équipes. Actuels: $joueursActuelsSet, DansEquipes: $currentPlayersInTeamsSet")
+                if (joueursActuels.isNotEmpty()) {
+                    val midPoint = (joueursActuels.size + 1) / 2
+                    equipeAState = joueursActuels.take(midPoint)
+                    equipeBState = joueursActuels.drop(midPoint)
+                } else {
+                    equipeAState = emptyList()
+                    equipeBState = emptyList()
+                }
+                Log.d("EquipeUpdate", "Equipes après mise à jour -> A: $equipeAState, B: $equipeBState")
+            }
+        } else {
+            // Si switch OFF, vider les équipes si elles ne le sont pas déjà.
+            if (equipeAState.isNotEmpty() || equipeBState.isNotEmpty()) {
+                Log.d("EquipeUpdate", "Switch OFF, vidage équipes.")
+                equipeAState = emptyList()
+                equipeBState = emptyList()
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -188,14 +219,22 @@ fun MainPingScreen(){
 //                )
 //            }
 
+
+
             if (isSwitchOn) {
-                val joueurs = listOf(text1, text2, text3, text4).filter { it.isNotBlank() }
-                if (joueurs.size >= 2) {
+                // ... (Champs Joueur 3 et 4) ...
+
+                // APPEL MODIFIÉ à EquipeDragAndDropScreen
+                if (joueursActuels.isNotEmpty()) { // Ou une condition plus stricte si nécessaire
                     Text("Organisez vos équipes :", style = MaterialTheme.typography.titleMedium)
-                    EquipeDragAndDropScreen(joueurs)
+                    EquipeDragAndDropScreen(
+                        equipeA = equipeAState, // Passe l'état
+                        equipeB = equipeBState, // Passe l'état
+                        onEquipeAChange = { newEquipeA -> equipeAState = newEquipeA }, // Callback
+                        onEquipeBChange = { newEquipeB -> equipeBState = newEquipeB }  // Callback
+                    )
                 }
             }
-
 
             Column(
                 modifier = Modifier.padding(16.dp),
@@ -275,9 +314,16 @@ fun EquipeView(
     }
 }
 @Composable
-fun EquipeDragAndDropScreen(joueursInitiaux: List<String>) {
-    var equipeA by remember { mutableStateOf(joueursInitiaux.take(2)) }
-    var equipeB by remember { mutableStateOf(joueursInitiaux.drop(2)) }
+fun EquipeDragAndDropScreen(
+    equipeA: List<String>, // Reçoit directement l'état
+    equipeB: List<String>, // Reçoit directement l'état
+    onEquipeAChange: (List<String>) -> Unit, // Callback pour mettre à jour
+    onEquipeBChange: (List<String>) -> Unit,  // Callback pour mettre à jour
+//    joueursInitiaux: List<String>
+) {
+
+//    var equipeA by remember { mutableStateOf(joueursInitiaux.take(2)) }
+//    var equipeB by remember { mutableStateOf(joueursInitiaux.drop(2)) }
     var joueurEnCours by remember { mutableStateOf<String?>(null) }
 
     Row(
@@ -296,9 +342,10 @@ fun EquipeDragAndDropScreen(joueursInitiaux: List<String>) {
                     joueurEnCours?.let { joueur ->
                         if (equipeB.contains(joueur)) {
                             Log.d("DragDrop", "Déplacement de $joueur de B vers A")
-
-                            equipeB = equipeB - joueur
-                            equipeA = equipeA + joueur
+                            onEquipeBChange(equipeB - joueur) // Modifie via callback
+                            onEquipeAChange(equipeA + joueur) // M
+//                            equipeB = equipeB - joueur
+//                            equipeA = equipeA + joueur
                             joueurEnCours = null
                         }else{
                             Log.d("DragDrop", "$joueur n'est pas dans equipeB ou drag sur sa propre équipe.")
@@ -322,9 +369,10 @@ fun EquipeDragAndDropScreen(joueursInitiaux: List<String>) {
                     joueurEnCours?.let { joueur ->
                         if (equipeA.contains(joueur)) {
                             Log.d("DragDrop", "Déplacement de $joueur de A vers B")
-
-                            equipeA = equipeA - joueur
-                            equipeB = equipeB + joueur
+                            onEquipeAChange(equipeA - joueur) // Modifie via callback
+                            onEquipeBChange(equipeB + joueur) //
+//                            equipeA = equipeA - joueur
+//                            equipeB = equipeB + joueur
                             joueurEnCours = null
                         }else{
                             Log.d("DragDrop", "$joueur n'est pas dans equipeA ou drag sur sa propre équipe.")
