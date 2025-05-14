@@ -1,7 +1,14 @@
 package com.example.scoreboardping.ui
 
 import android.R.attr.text
+import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.Card
@@ -18,11 +25,18 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.IntOffset
+import kotlinx.coroutines.delay
+import kotlin.math.roundToInt
 
 class ScorePingScreen {
 
@@ -38,6 +52,10 @@ fun MainPingScreen(){
     val options = listOf("BO 1", "BO 3", "BO 5","BO 7")
     var selectedOption by remember { mutableStateOf(options[0]) }
     var isSwitchOn by remember { mutableStateOf(false) }
+    val joueursActuels = listOf(text1, text2, text3, text4).filter { it.isNotBlank() }
+    var equipeAState by remember { mutableStateOf<List<String>>(emptyList()) }
+    var equipeBState by remember { mutableStateOf<List<String>>(emptyList()) }
+
 
     Box(
         modifier = Modifier
@@ -152,24 +170,31 @@ fun MainPingScreen(){
                 }
             }
 
+//            if (isSwitchOn) {
+//                // Carte Équipe 1
+//                EquipeView(
+//                    joueur1 = text1,
+//                    joueur2 = text2,
+//                    equipeNom = "Equipe 1",
+//                    couleur = Color(0xFF1E88E5)
+//                )
+//
+//                // Carte Équipe 2
+//                EquipeView(
+//                    joueur1 = text3,
+//                    joueur2 = text4,
+//                    equipeNom = "Equipe 2",
+//                    couleur = Color(0xFF388E3C)
+//                )
+//            }
+
             if (isSwitchOn) {
-                // Carte Équipe 1
-                EquipeView(
-                    joueur1 = text1,
-                    joueur2 = text2,
-                    equipeNom = "Equipe 1",
-                    couleur = Color(0xFF1E88E5)
-                )
-
-                // Carte Équipe 2
-                EquipeView(
-                    joueur1 = text3,
-                    joueur2 = text4,
-                    equipeNom = "Equipe 2",
-                    couleur = Color(0xFF388E3C)
-                )
+                val joueurs = listOf(text1, text2, text3, text4).filter { it.isNotBlank() }
+                if (joueurs.size >= 2) {
+                    Text("Organisez vos équipes :", style = MaterialTheme.typography.titleMedium)
+                    EquipeDragAndDropScreen(joueurs)
+                }
             }
-
 
 
             Column(
@@ -249,3 +274,181 @@ fun EquipeView(
         }
     }
 }
+@Composable
+fun EquipeDragAndDropScreen(joueursInitiaux: List<String>) {
+    var equipeA by remember { mutableStateOf(joueursInitiaux.take(2)) }
+    var equipeB by remember { mutableStateOf(joueursInitiaux.drop(2)) }
+    var joueurEnCours by remember { mutableStateOf<String?>(null) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Box(modifier = Modifier.weight(1f)) {
+            DropEquipeCard(
+                nom = "Équipe A",
+                joueurs = equipeA,
+                couleur = Color(0xFF1E88E5),
+                onDrop = {
+                    Log.d("DragDrop", "EquipeDragAndDropScreen - onDrop sur Équipe A. joueurEnCours: $joueurEnCours")
+                    joueurEnCours?.let { joueur ->
+                        if (equipeB.contains(joueur)) {
+                            Log.d("DragDrop", "Déplacement de $joueur de B vers A")
+
+                            equipeB = equipeB - joueur
+                            equipeA = equipeA + joueur
+                            joueurEnCours = null
+                        }else{
+                            Log.d("DragDrop", "$joueur n'est pas dans equipeB ou drag sur sa propre équipe.")
+                        }
+                    }
+                },
+                onDragStart = {
+                    Log.d("DragDrop", "EquipeDragAndDropScreen - onDragStart: Définition de joueurEnCours = $it")
+                    joueurEnCours = it }
+            )
+        }
+
+        Box(modifier = Modifier.weight(1f)) {
+            DropEquipeCard(
+                nom = "Équipe B",
+                joueurs = equipeB,
+                couleur = Color(0xFF388E3C),
+                onDrop = {
+                    Log.d("DragDrop", "EquipeDragAndDropScreen - onDrop sur Équipe B. joueurEnCours: $joueurEnCours")
+                    Log.d("DragDrop", "État actuel avant vérification -> EquipeA: $equipeA, EquipeB: $equipeB") // <-- AJOUTER CECI
+                    joueurEnCours?.let { joueur ->
+                        if (equipeA.contains(joueur)) {
+                            Log.d("DragDrop", "Déplacement de $joueur de A vers B")
+
+                            equipeA = equipeA - joueur
+                            equipeB = equipeB + joueur
+                            joueurEnCours = null
+                        }else{
+                            Log.d("DragDrop", "$joueur n'est pas dans equipeA ou drag sur sa propre équipe.")
+
+                        }
+                    }
+                },
+                onDragStart = {
+                    Log.d("DragDrop", "EquipeDragAndDropScreen - onDragStart: Définition de joueurEnCours = $it")
+                    joueurEnCours = it }
+            )
+        }
+    }
+}
+
+@Composable
+fun DropEquipeCard(
+    nom: String,
+    joueurs: List<String>,
+    couleur: Color,
+    onDrop: (String) -> Unit,
+    onDragStart: (String) -> Unit
+) {
+    val dropState = remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier
+            .fillMaxHeight()
+            .padding(4.dp)
+            .background(
+                if (dropState.value) couleur.copy(alpha = 0.1f) else Color.Transparent
+            ),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5)),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(nom, style = MaterialTheme.typography.titleMedium, color = couleur)
+            joueurs.forEach { joueur ->
+                DraggableJoueurChip(
+                    nom = joueur,
+                    couleur = couleur,
+                    onDragStart = { onDragStart(joueur) },
+                    onDropped = { onDrop(joueur) }
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+fun DraggableJoueurChip(
+    nom: String,
+    couleur: Color,
+    onDragStart: () -> Unit,
+    onDropped: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(2.dp, RoundedCornerShape(8.dp))
+            .background(Color.White, RoundedCornerShape(8.dp))
+            .pointerInput(nom) {
+                detectDragGesturesAfterLongPress(
+                    onDragStart = { onDragStart() },
+                    onDragEnd = { onDropped() },
+                    onDragCancel = {},
+                    onDrag = {change, dragAmount ->
+                        change.consume()
+                    }
+                )
+            }
+            .padding(8.dp)
+    ) {
+        Text(text = nom, color = couleur)
+    }
+}
+
+
+
+@Composable
+fun EquipeDragCard(
+    equipeNom: String,
+    joueurs: List<String>,
+    couleur: Color,
+    onJoueurRetire: (String) -> Unit
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = couleur),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = equipeNom,
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.White
+            )
+            joueurs.forEach { joueur ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onJoueurRetire(joueur) },
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    shape = RoundedCornerShape(8.dp),
+                    elevation = CardDefaults.cardElevation(2.dp)
+                ) {
+                    Text(
+                        text = joueur,
+                        modifier = Modifier.padding(8.dp),
+                        color = couleur
+                    )
+                }
+            }
+        }
+    }
+}
+
